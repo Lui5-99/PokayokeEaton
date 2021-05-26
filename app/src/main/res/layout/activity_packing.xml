@@ -212,7 +212,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/LayoutVacio4"
+            android:id="@+id/conntenedor"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:orientation="vertical"></LinearLayout>
