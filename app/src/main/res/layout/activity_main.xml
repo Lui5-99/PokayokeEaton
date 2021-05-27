@@ -33,7 +33,7 @@
                     android:orientation="horizontal"></LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="287dp"
+                    android:layout_width="275dp"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
@@ -91,8 +91,8 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="68dp"
-                    android:layout_height="88dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal">
 
                 </LinearLayout>
@@ -112,12 +112,12 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="95dp"
+                    android:layout_width="97dp"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"></LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="255dp"
+                    android:layout_width="249dp"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
@@ -171,6 +171,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:insetLeft="0dp"
+                        android:onClick="Log"
                         android:text="Button" />
                 </LinearLayout>
 
