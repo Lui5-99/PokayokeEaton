@@ -3,6 +3,7 @@ package com.example.pokayokeeaton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class Packing extends AppCompatActivity {
     EditText edtCodigo, edNoDelivery, edNoPzas;
     Spinner cbCliente, cbDestino;
+    Button btCodigo;
     ArrayList<String> lClientes, lDestinos;
     ArrayAdapter<String> adapter;
     @Override
@@ -33,9 +35,9 @@ public class Packing extends AppCompatActivity {
         edNoPzas = findViewById(R.id.edNoPzas);
         cbCliente = findViewById(R.id.cbCliente);
         cbDestino = findViewById(R.id.cbDestino);
+        btCodigo = findViewById(R.id.btCodigo);
         lClientes = new ArrayList<String>();
         lDestinos = new ArrayList<String>();
-        llenarCB(cbCliente, lClientes, "clientes", "nombre", 0);
         cbCliente.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -55,10 +57,11 @@ public class Packing extends AppCompatActivity {
             Destinos();
             ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
             SQLiteDatabase BD = adminBD.getWritableDatabase();
-            Cursor fila;
+            Cursor fila = BD.rawQuery("Select  * from " + tabla, null);
             if(Id > 0){
                 lDestinos.clear();
-                fila = BD.rawQuery("Select " + columna + " from " + tabla + " where IDCliente = "+ Id, null);
+                if(lClientes.size() > 0)
+                    fila = BD.rawQuery("Select " + columna + " from " + tabla + " where IDCliente = "+ Id, null);
             }
             else
                 fila = BD.rawQuery("Select " + columna + " from " + tabla, null);
@@ -176,5 +179,32 @@ public class Packing extends AppCompatActivity {
             add.put("IDCliente", 8);
             BD.insert("destinos", null, add);
         }
+    }
+    public void btnCodigoBarras_Click(View v){
+        if(!(edtCodigo.getText().toString().isEmpty())){
+            llenarCB(cbCliente, lClientes, "clientes", "nombre", 0);
+            btCodigo.setEnabled(false);
+            edtCodigo.setEnabled(false);
+        }
+    }
+    public void btLimpiar_Click(View v){
+        btCodigo.setEnabled(true);
+        edtCodigo.setEnabled(true);
+        cbCliente.setAdapter(null);
+        cbDestino.setAdapter(null);
+        lClientes.clear();
+        lDestinos.clear();
+        edtCodigo.setText("");
+        edNoDelivery.setText("");
+        edNoPzas.setText("");
+    }
+    public void btPiezas_Click(View v){
+        ArrayList <String> Datos = new ArrayList<>();
+        Datos.add(cbDestino.getSelectedItem().toString());
+        Datos.add(edNoDelivery.getText().toString());
+        Datos.add(edNoPzas.getText().toString());
+        Intent intent = new Intent(this, Lectura.class);
+        intent.putExtra("datos", Datos);
+        startActivity(intent);
     }
 }
