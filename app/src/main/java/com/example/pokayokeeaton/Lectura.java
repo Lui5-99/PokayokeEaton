@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -96,6 +98,7 @@ public class Lectura extends AppCompatActivity {
         }
         if(PiezasEscaneadas == Integer.parseInt(DatosRec.get(2))){
             btSiguiente.setText("Generar Archivo");
+            alerta();
         }
     }
     @Override
@@ -126,10 +129,10 @@ public class Lectura extends AppCompatActivity {
             List<Escaneos> escaneos = new ArrayList<Escaneos>();
             ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
             SQLiteDatabase BD = adminBD.getWritableDatabase();
-            Cursor fila = BD.rawQuery("Select * from Etiqueta", null);
+            Cursor fila = BD.rawQuery("Select * from Etiqueta order by IDEtiqueta", null);
             if(fila.moveToFirst()){
                 do{
-                    escaneos.add(new Escaneos(fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
+                    escaneos.add(new Escaneos(fila.getString(1),fila.getString(2),fila.getString(3),fila.getString(4)));
                 }
                 while (fila.moveToNext());
             }
@@ -152,6 +155,9 @@ public class Lectura extends AppCompatActivity {
         }
         finally {
             docPDF.close();
+            Intent intent = new Intent(this, Packing.class);
+            limpiarBD();
+            startActivity(intent);
         }
     }
     private boolean crearFolder(String nombreCarpeta){
@@ -174,9 +180,6 @@ public class Lectura extends AppCompatActivity {
         }
         else{
             crearArchivo();
-            Intent intent = new Intent(this, Packing.class);
-            limpiarBD();
-            startActivity(intent);
         }
     }
     private void Escaneos(){
@@ -206,5 +209,24 @@ public class Lectura extends AppCompatActivity {
         ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
         SQLiteDatabase BD = adminBD.getWritableDatabase();
         BD.execSQL("delete from Etiqueta");
+    }
+    private void alerta(){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Embarque");
+        dialog.setMessage("¿Generar Archivo?");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Generar Archivo", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                crearArchivo();
+            }
+        });
+        dialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialog.show();
     }
 }

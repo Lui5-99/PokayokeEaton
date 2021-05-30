@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class Packing extends AppCompatActivity {
     EditText edtCodigo, edNoDelivery, edNoPzas;
     Spinner cbCliente, cbDestino;
-    Button btCodigo;
+    Button btCodigo, btPiezas;
     ArrayList<String> lClientes, lDestinos;
     ArrayAdapter<String> adapter;
     @Override
@@ -36,13 +36,20 @@ public class Packing extends AppCompatActivity {
         cbCliente = findViewById(R.id.cbCliente);
         cbDestino = findViewById(R.id.cbDestino);
         btCodigo = findViewById(R.id.btCodigo);
+        btPiezas = findViewById(R.id.btPiezas);
         lClientes = new ArrayList<String>();
         lDestinos = new ArrayList<String>();
+        edNoDelivery.setEnabled(false);
+        edNoPzas.setEnabled(false);
+        btPiezas.setEnabled(false);
         cbCliente.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 position +=1;
                 llenarCB(cbDestino, lDestinos, "destinos", "nombre", position);
+                edNoDelivery.setEnabled(true);
+                edNoPzas.setEnabled(true);
+                btPiezas.setEnabled(true);
             }
 
             @Override
