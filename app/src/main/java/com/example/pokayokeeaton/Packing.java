@@ -51,6 +51,10 @@ public class Packing extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed(){
+
+    }
     private void llenarCB(Spinner combo, ArrayList<String> lista, String tabla, String columna, int Id){
         try{
             Clientes();
@@ -101,7 +105,7 @@ public class Packing extends AppCompatActivity {
             add.put("Nombre", "Blue Bird");
             BD.insert("clientes", null, add);
         }
-        
+        BD.close();
     }
     private void Destinos(){
         ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
@@ -179,6 +183,7 @@ public class Packing extends AppCompatActivity {
             add.put("IDCliente", 8);
             BD.insert("destinos", null, add);
         }
+        BD.close();
     }
     public void btnCodigoBarras_Click(View v){
         if(!(edtCodigo.getText().toString().isEmpty())){
@@ -203,6 +208,8 @@ public class Packing extends AppCompatActivity {
         Datos.add(cbDestino.getSelectedItem().toString());
         Datos.add(edNoDelivery.getText().toString());
         Datos.add(edNoPzas.getText().toString());
+        Datos.add(edtCodigo.getText().toString());
+        Datos.add(cbCliente.getSelectedItem().toString());
         Intent intent = new Intent(this, Lectura.class);
         intent.putExtra("datos", Datos);
         startActivity(intent);
