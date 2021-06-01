@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,6 +60,7 @@ public class Lectura extends AppCompatActivity {
     Button btSiguiente;
     LinearLayout layoutSetLine;
     int PiezasEscaneadas;
+    boolean estado = false;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -83,11 +85,15 @@ public class Lectura extends AppCompatActivity {
         }
         edCodigo2D = findViewById(R.id.edCodigo2D);
         edAIAG = findViewById(R.id.edAIAG);
+        edAIAG.setEnabled(false);
         edLineSet = findViewById(R.id.edLineSet);
+        edLineSet.setEnabled(false);
         tvCantidad = findViewById(R.id.tvCantidad);
         layoutSetLine = findViewById(R.id.LayoutLineSetPrincipal);
         btSiguiente = findViewById(R.id.btSiguiente);
+        btSiguiente.setVisibility(View.INVISIBLE);
         crearFolder("EatonFiles");
+        validar();
         if(IsTwo(DatosRec)){
             tvCantidad.setText(" " + PiezasEscaneadas + " / " + DatosRec.get(2));
             layoutSetLine.setVisibility(View.INVISIBLE);
@@ -97,7 +103,6 @@ public class Lectura extends AppCompatActivity {
             layoutSetLine.setVisibility(View.VISIBLE);
         }
         if(PiezasEscaneadas == Integer.parseInt(DatosRec.get(2))){
-            btSiguiente.setText("Generar Archivo");
             alerta();
         }
     }
@@ -122,7 +127,7 @@ public class Lectura extends AppCompatActivity {
 
     private void crearArchivo(){
         Date date = new Date();
-        DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd_HH:MM:ss");
+        DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDate = fecha.format(date);
         Document docPDF = new Document();
         try{
@@ -146,8 +151,15 @@ public class Lectura extends AppCompatActivity {
             docPDF.add(new Paragraph("Destino: " + DatosRec.get(0)));
             docPDF.add(new Paragraph("Cantidad: " + DatosRec.get(2)));
             docPDF.add(new Paragraph(" "));
-            for(int i = 0; i < Integer.parseInt(DatosRec.get(2)); i++){
-                docPDF.add(new Paragraph("" + escaneos.get(i).getEtiqueta2D() + " | " + escaneos.get(i).getetiquetaAIAG() + " | " + escaneos.get(i).getetiquetaLineSet() + " | " + escaneos.get(i).getfecha()));
+            if(IsTwo(DatosRec)){
+                for(int i = 0; i < Integer.parseInt(DatosRec.get(2)); i++){
+                    docPDF.add(new Paragraph("" + escaneos.get(i).getEtiqueta2D() + " | " + escaneos.get(i).getetiquetaAIAG() + " | " + escaneos.get(i).getfecha()));
+                }
+            }
+            else{
+                for(int i = 0; i < Integer.parseInt(DatosRec.get(2)); i++){
+                    docPDF.add(new Paragraph("" + escaneos.get(i).getEtiqueta2D() + " | " + escaneos.get(i).getetiquetaAIAG() + " | " + escaneos.get(i).getetiquetaLineSet() + " | " + escaneos.get(i).getfecha()));
+                }
             }
         }
         catch(Exception ex){
@@ -169,25 +181,20 @@ public class Lectura extends AppCompatActivity {
             return true;
         }
     }
-    public void siguiente(View v){
-        if(btSiguiente.getText().toString().equals("Siguiente")){
-            PiezasEscaneadas += 1;
-            Intent intent = new Intent(this, Lectura.class);
-            intent.putExtra("datos", DatosRec);
-            intent.putExtra("Piezas", PiezasEscaneadas);
-            Escaneos();
-            startActivity(intent);
-        }
-        else{
-            crearArchivo();
-        }
+    public void siguiente(){
+        PiezasEscaneadas += 1;
+        Intent intent = new Intent(this, Lectura.class);
+        intent.putExtra("datos", DatosRec);
+        intent.putExtra("Piezas", PiezasEscaneadas);
+        Escaneos();
+        startActivity(intent);
     }
     private void Escaneos(){
         ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
         SQLiteDatabase BD = adminBD.getWritableDatabase();
         ContentValues add = new ContentValues();
         Date date = new Date();
-        DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+        DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDate = fecha.format(date);
         if(IsTwo(DatosRec)){
             add.put("etiqueta2D", edCodigo2D.getText().toString());
@@ -228,5 +235,50 @@ public class Lectura extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+    public void validar(){
+        edCodigo2D.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    if(!edCodigo2D.getText().toString().equals("")){
+                        edAIAG.setEnabled(true);
+                    }
+                }
+                return false;
+            }
+        });
+        edAIAG.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    if(edAIAG.getText().toString().equals(edCodigo2D.getText().toString())){
+                        if(!IsTwo(DatosRec)){
+                            edLineSet.setEnabled(true);
+                            estado = true;
+                        }
+                        else{
+                            siguiente();
+                        }
+                    }
+                    else{
+                        edLineSet.setEnabled(false);
+                        estado = false;
+                    }
+                }
+                return false;
+            }
+        });
+        edLineSet.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    if(edAIAG.getText().toString().equals(edLineSet.getText().toString()) && estado){
+                        siguiente();
+                    }
+                }
+                return false;
+            }
+        });
     }
 }

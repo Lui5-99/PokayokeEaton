@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,14 +43,13 @@ public class Packing extends AppCompatActivity {
         edNoDelivery.setEnabled(false);
         edNoPzas.setEnabled(false);
         btPiezas.setEnabled(false);
+        validar();
         cbCliente.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 position +=1;
                 llenarCB(cbDestino, lDestinos, "destinos", "nombre", position);
                 edNoDelivery.setEnabled(true);
-                edNoPzas.setEnabled(true);
-                btPiezas.setEnabled(true);
             }
 
             @Override
@@ -202,6 +202,8 @@ public class Packing extends AppCompatActivity {
     public void btLimpiar_Click(View v){
         btCodigo.setEnabled(true);
         edtCodigo.setEnabled(true);
+        edNoPzas.setEnabled(false);
+        edNoPzas.setEnabled(false);
         cbCliente.setAdapter(null);
         cbDestino.setAdapter(null);
         lClientes.clear();
@@ -220,5 +222,35 @@ public class Packing extends AppCompatActivity {
         Intent intent = new Intent(this, Lectura.class);
         intent.putExtra("datos", Datos);
         startActivity(intent);
+    }
+    private void validar(){
+        edtCodigo.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    btnCodigoBarras_Click(v);
+                }
+                return false;
+            }
+        });
+        edNoDelivery.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    edNoPzas.setEnabled(true);
+                    btPiezas.setEnabled(true);
+                }
+                return false;
+            }
+        });
+        edNoPzas.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    btPiezas_Click(v);
+                }
+                return false;
+            }
+        });
     }
 }
