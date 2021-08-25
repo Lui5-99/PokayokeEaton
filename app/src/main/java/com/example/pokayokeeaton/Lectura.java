@@ -58,7 +58,6 @@ public class Lectura extends AppCompatActivity {
     EditText edCodigo2D, edAIAG, edLineSet;
     TextView tvCantidad;
     Button btSiguiente;
-    LinearLayout layoutSetLine;
     int PiezasEscaneadas;
     boolean estado = false;
     private static String[] PERMISSIONS_STORAGE = {
@@ -89,18 +88,17 @@ public class Lectura extends AppCompatActivity {
         edLineSet = findViewById(R.id.edLineSet);
         edLineSet.setEnabled(false);
         tvCantidad = findViewById(R.id.tvCantidad);
-        layoutSetLine = findViewById(R.id.LayoutLineSetPrincipal);
         btSiguiente = findViewById(R.id.btSiguiente);
         btSiguiente.setVisibility(View.INVISIBLE);
         crearFolder("EatonFiles");
         validar();
         if(IsTwo(DatosRec)){
             tvCantidad.setText(" " + PiezasEscaneadas + " / " + DatosRec.get(2));
-            layoutSetLine.setVisibility(View.INVISIBLE);
+            edLineSet.setVisibility(View.INVISIBLE);
         }
         else{
             tvCantidad.setText(" " + PiezasEscaneadas + " / " + DatosRec.get(2));
-            layoutSetLine.setVisibility(View.VISIBLE);
+            edLineSet.setVisibility(View.VISIBLE);
         }
         if(PiezasEscaneadas == Integer.parseInt(DatosRec.get(2))){
             alerta();
